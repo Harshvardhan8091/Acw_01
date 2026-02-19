@@ -1,0 +1,45 @@
+<%- include('partials/header') %>
+
+    <main class="container edit-main">
+        <div class="edit-card">
+
+            <% if (typeof error !=='undefined' && error && error.length> 0) { %>
+                <div class="flash flash-error">
+                    <span class="flash-icon">!</span>
+                    <% error.forEach(function(msg) { %><span>
+                            <%= msg %>
+                        </span>
+                        <% }); %>
+                </div>
+                <% } %>
+
+                    <div class="edit-header">
+                        <a href="/" class="back-link">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.5">
+                                <polyline points="15 18 9 12 15 6" />
+                            </svg>
+                            Back
+                        </a>
+                        <h2>Edit Confession</h2>
+                        <span class="badge">Verified</span>
+                    </div>
+
+                    <form action="/confessions/<%= confession._id %>?_method=PUT" method="POST" class="confession-form">
+                        <input type="hidden" name="_method" value="PUT" />
+                        <input type="hidden" name="secretCode" value="<%= secretCode %>" />
+
+                        <div class="form-group">
+                            <label for="text">Update your confession</label>
+                            <textarea id="text" name="text" rows="6" required><%= confession.text %></textarea>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-submit">Save Changes</button>
+                            <a href="/" class="btn btn-cancel">Cancel</a>
+                        </div>
+                    </form>
+        </div>
+    </main>
+
+    <%- include('partials/footer') %>

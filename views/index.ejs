@@ -1,0 +1,213 @@
+<%- include('partials/header') %>
+
+    <main class="container">
+
+        <!-- ── FLASH MESSAGES ── -->
+        <% if (success && success.length> 0) { %>
+            <div class="flash flash-success">
+                <span class="flash-icon">✓</span>
+                <% success.forEach(function(msg) { %><span>
+                        <%= msg %>
+                    </span>
+                    <% }); %>
+            </div>
+            <% } %>
+                <% if (error && error.length> 0) { %>
+                    <div class="flash flash-error">
+                        <span class="flash-icon">!</span>
+                        <% error.forEach(function(msg) { %><span>
+                                <%= msg %>
+                            </span>
+                            <% }); %>
+                    </div>
+                    <% } %>
+
+                        <!-- ── HERO ── -->
+                        <section class="hero">
+                            <div class="hero-eyebrow">🤫 100% Anonymous</div>
+                            <h1 class="hero-title">Speak freely.<br>No names attached.</h1>
+                            <p class="hero-sub">Share what you can't say out loud. No identity. No judgment. Just
+                                honesty.</p>
+                        </section>
+
+                        <!-- ── POST FORM (logged in) ── -->
+                        <% if (user) { %>
+                            <section class="card post-card">
+                                <div class="card-header">
+                                    <h2>Write a confession</h2>
+                                    <span class="badge">🔒 Anonymous</span>
+                                </div>
+                                <form action="/confessions" method="POST" class="confession-form">
+                                    <div class="form-group">
+                                        <label for="text">What's on your mind?</label>
+                                        <textarea id="text" name="text" rows="4"
+                                            placeholder="Write your confession here..." required></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="secretCode">Secret Code</label>
+                                        <input type="text" id="secretCode" name="secretCode"
+                                            placeholder="e.g. mango2025" minlength="4" required autocomplete="off" />
+                                        <span class="field-hint">Minimum 4 characters. Required for editing or
+                                            deleting.</span>
+                                    </div>
+                                    <button type="submit" class="btn btn-submit">Post Confession</button>
+                                </form>
+                            </section>
+
+                            <% } else { %>
+                                <!-- ── LOGIN CTA ── -->
+                                <section class="login-cta">
+                                    <div class="cta-content">
+                                        <h2>Ready to whisper?</h2>
+                                        <p>Sign in with Google to post anonymously. Your identity stays completely
+                                            hidden.</p>
+                                        <a href="/auth/google" class="btn btn-google-big">
+                                            <svg width="18" height="18" viewBox="0 0 48 48">
+                                                <path fill="#EA4335"
+                                                    d="M24 9.5c3.54 0 6.72 1.22 9.22 3.22l6.87-6.87C35.91 2.38 30.28 0 24 0 14.62 0 6.52 5.38 2.56 13.22l8.04 6.24C12.52 13.18 17.87 9.5 24 9.5z" />
+                                                <path fill="#4285F4"
+                                                    d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+                                                <path fill="#FBBC05"
+                                                    d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-8.04-6.24C.96 16.46 0 20.12 0 24c0 3.88.96 7.54 2.49 10.83l8.04-6.24z" />
+                                                <path fill="#34A853"
+                                                    d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.13 0-11.48-3.68-13.4-9l-8.04 6.24C6.52 42.62 14.62 48 24 48z" />
+                                            </svg>
+                                            Continue with Google
+                                        </a>
+                                    </div>
+                                    <div class="cta-features">
+                                        <div class="feature-item"><span class="feature-icon">🔒</span><span>100%
+                                                Anonymous</span></div>
+                                        <div class="feature-item"><span class="feature-icon">🗝️</span><span>Secret Code
+                                                Protected</span></div>
+                                        <div class="feature-item"><span class="feature-icon">💬</span><span>Community
+                                                Reactions</span></div>
+                                    </div>
+                                </section>
+                                <% } %>
+
+                                    <!-- ── CONFESSIONS FEED ── -->
+                                    <section class="feed-section">
+                                        <div class="feed-header">
+                                            <h2>Recent Confessions</h2>
+                                            <span class="feed-count">
+                                                <%= confessions.length %> confession<%= confessions.length !==1 ? 's'
+                                                        : '' %>
+                                            </span>
+                                        </div>
+
+                                        <% if (confessions.length===0) { %>
+                                            <div class="empty-state">
+                                                <p class="empty-icon">📭</p>
+                                                <p class="empty-text">No confessions yet.</p>
+                                                <p class="empty-sub">Be the first to post.</p>
+                                            </div>
+                                            <% } else { %>
+                                                <div class="confessions-grid">
+                                                    <% confessions.forEach(function(confession) { %>
+                                                        <div class="confession-card">
+
+                                                            <!-- Text -->
+                                                            <p class="confession-text">
+                                                                <%= confession.text %>
+                                                            </p>
+
+                                                            <!-- Timestamp -->
+                                                            <p class="confession-meta">
+                                                                <svg width="11" height="11" viewBox="0 0 24 24"
+                                                                    fill="none" stroke="currentColor" stroke-width="2">
+                                                                    <circle cx="12" cy="12" r="10" />
+                                                                    <polyline points="12 6 12 12 16 14" />
+                                                                </svg>
+                                                                <%= confession.createdAt.toLocaleDateString('en-IN', {
+                                                                    year: 'numeric' , month: 'short' , day: 'numeric' ,
+                                                                    hour: '2-digit' , minute: '2-digit' }) %>
+                                                            </p>
+
+                                                            <!-- Reactions -->
+                                                            <div class="reactions">
+                                                                <form action="/confessions/<%= confession._id %>/react"
+                                                                    method="POST">
+                                                                    <input type="hidden" name="reaction" value="like" />
+                                                                    <button type="submit" class="reaction-btn">
+                                                                        👍 <span>
+                                                                            <%= confession.reactions.like %>
+                                                                        </span>
+                                                                    </button>
+                                                                </form>
+                                                                <form action="/confessions/<%= confession._id %>/react"
+                                                                    method="POST">
+                                                                    <input type="hidden" name="reaction" value="love" />
+                                                                    <button type="submit" class="reaction-btn">
+                                                                        ❤️ <span>
+                                                                            <%= confession.reactions.love %>
+                                                                        </span>
+                                                                    </button>
+                                                                </form>
+                                                                <form action="/confessions/<%= confession._id %>/react"
+                                                                    method="POST">
+                                                                    <input type="hidden" name="reaction"
+                                                                        value="laugh" />
+                                                                    <button type="submit" class="reaction-btn">
+                                                                        😂 <span>
+                                                                            <%= confession.reactions.laugh %>
+                                                                        </span>
+                                                                    </button>
+                                                                </form>
+                                                            </div>
+
+                                                            <!-- Actions -->
+                                                            <div class="card-actions">
+                                                                <button class="btn-edit"
+                                                                    onclick="handleEdit('<%= confession._id %>')">
+                                                                    Edit
+                                                                </button>
+                                                                <button class="btn-delete"
+                                                                    onclick="handleDelete('<%= confession._id %>')">
+                                                                    Delete
+                                                                </button>
+                                                            </div>
+
+                                                            <!-- Hidden delete form -->
+                                                            <form id="delete-form-<%= confession._id %>"
+                                                                action="/confessions/<%= confession._id %>?_method=DELETE"
+                                                                method="POST" style="display:none;">
+                                                                <input type="hidden" name="_method" value="DELETE" />
+                                                                <input type="hidden" name="secretCode"
+                                                                    id="delete-code-<%= confession._id %>" value="" />
+                                                            </form>
+                                                        </div>
+                                                        <% }); %>
+                                                </div>
+                                                <% } %>
+                                    </section>
+
+    </main>
+
+    <script>
+        function handleEdit(id) {
+            const code = prompt('Enter your secret code to edit:');
+            if (code === null) return;
+            if (code.trim().length < 4) { alert('Secret code must be at least 4 characters.'); return; }
+            window.location.href = '/edit/' + id + '?secretCode=' + encodeURIComponent(code.trim());
+        }
+
+        function handleDelete(id) {
+            const code = prompt('Enter your secret code to delete:');
+            if (code === null) return;
+            if (code.trim().length < 4) { alert('Secret code must be at least 4 characters.'); return; }
+            if (!confirm('Delete this confession permanently?')) return;
+            document.getElementById('delete-code-' + id).value = code.trim();
+            document.getElementById('delete-form-' + id).submit();
+        }
+
+        // Auto-dismiss flash messages
+        setTimeout(() => {
+            document.querySelectorAll('.flash').forEach(el => {
+                el.style.opacity = '0';
+                setTimeout(() => el.remove(), 300);
+            });
+        }, 4000);
+    </script>
+
+    <%- include('partials/footer') %>
