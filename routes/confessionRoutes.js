@@ -215,25 +215,42 @@ router.delete('/confessions/:id', async (req, res) => {
 // REACTION ROUTE
 // ─────────────────────────────────────────────
 
-// POST /confessions/:id/react → add one reaction (like, love, or laugh)
-router.post('/confessions/:id/react', async (req, res) => {
+// POST /confessions/:id/react → add one reaction per user (like, love, or laugh)
+router.post('/confessions/:id/react', ensureAuth, async (req, res) => {
     try {
         const { reaction } = req.body;
         const validReactions = ['like', 'love', 'laugh'];
 
+        // Validate reaction type
         if (!validReactions.includes(reaction)) {
-            req.flash('error', 'Invalid reaction.');
+            req.flash('error', 'Invalid reaction type.');
             return res.redirect('/');
         }
 
-        // Increment only the selected reaction field
-        const update = {};
-        update[`reactions.${reaction}`] = 1;
+        const confession = await Confession.findById(req.params.id);
+        if (!confession) {
+            req.flash('error', 'Confession not found.');
+            return res.redirect('/');
+        }
 
-        await Confession.findByIdAndUpdate(
-            req.params.id,
-            { $inc: update }
+        // Check if this user has already reacted with this same reaction
+        const alreadyReacted = confession.reactedUsers.some(
+            (entry) => entry.userId === req.user.id && entry.reaction === reaction
         );
+
+        if (alreadyReacted) {
+            req.flash('error', 'You have already reacted to this confession!');
+            return res.redirect('/');
+        }
+
+        // User hasn't reacted with this type yet → increment count and record the user
+        const incField = {};
+        incField[`reactions.${reaction}`] = 1;
+
+        await Confession.findByIdAndUpdate(req.params.id, {
+            $inc: incField,
+            $push: { reactedUsers: { userId: req.user.id, reaction: reaction } }
+        });
 
         res.redirect('/');
     } catch (err) {

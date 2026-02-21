@@ -21,10 +21,18 @@ const ConfessionSchema = new mongoose.Schema({
 
   // Reaction counts
   reactions: {
-    like:  { type: Number, default: 0 },
-    love:  { type: Number, default: 0 },
+    like: { type: Number, default: 0 },
+    love: { type: Number, default: 0 },
     laugh: { type: Number, default: 0 }
   },
+
+  // Tracks which user reacted with which reaction (prevents duplicate reactions)
+  reactedUsers: [
+    {
+      userId: { type: String, required: true },
+      reaction: { type: String, enum: ['like', 'love', 'laugh'], required: true }
+    }
+  ],
 
   // Timestamp when the confession was created
   createdAt: {
