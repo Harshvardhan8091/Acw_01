@@ -34,6 +34,13 @@ const ConfessionSchema = new mongoose.Schema({
     }
   ],
 
+  // Moderation status — set by admin
+  status: {
+    type: String,
+    enum: ['pending', 'approved', 'rejected'],
+    default: 'pending'
+  },
+
   // Timestamp when the confession was created
   createdAt: {
     type: Date,

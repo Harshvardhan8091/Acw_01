@@ -1,0 +1,113 @@
+<%- include('partials/header') %>
+
+    <main class="container">
+
+        <!-- ── FLASH MESSAGES ── -->
+        <% if (success && success.length> 0) { %>
+            <div class="flash flash-success">
+                <span class="flash-icon">✓</span>
+                <% success.forEach(function(msg) { %><span>
+                        <%= msg %>
+                    </span>
+                    <% }); %>
+            </div>
+            <% } %>
+                <% if (error && error.length> 0) { %>
+                    <div class="flash flash-error">
+                        <span class="flash-icon">!</span>
+                        <% error.forEach(function(msg) { %><span>
+                                <%= msg %>
+                            </span>
+                            <% }); %>
+                    </div>
+                    <% } %>
+
+                        <!-- ── ADMIN HEADER ── -->
+                        <section class="admin-hero">
+                            <div class="admin-hero-inner">
+                                <div class="admin-badge">🛡️ Admin Panel</div>
+                                <h1 class="admin-title">Confession Queue</h1>
+                                <p class="admin-sub">Review and moderate pending confessions before they go live.</p>
+                                <div class="admin-stats">
+                                    <div class="stat-pill">
+                                        <span class="stat-num">
+                                            <%= confessions.length %>
+                                        </span>
+                                        <span class="stat-label">Pending</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- ── PENDING CONFESSIONS ── -->
+                        <section class="admin-feed">
+
+                            <% if (confessions.length===0) { %>
+                                <div class="empty-state admin-empty">
+                                    <p class="empty-icon">✅</p>
+                                    <p class="empty-text">All clear!</p>
+                                    <p class="empty-sub">No confessions are waiting for review.</p>
+                                </div>
+
+                                <% } else { %>
+                                    <div class="admin-grid">
+                                        <% confessions.forEach(function(confession) { %>
+                                            <div class="admin-card">
+
+                                                <!-- Status badge -->
+                                                <span class="status-badge status-pending">⏳ Pending</span>
+
+                                                <!-- Confession text -->
+                                                <p class="admin-confession-text">
+                                                    <%= confession.text %>
+                                                </p>
+
+                                                <!-- Meta -->
+                                                <p class="admin-meta">
+                                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+                                                        stroke="currentColor" stroke-width="2">
+                                                        <circle cx="12" cy="12" r="10" />
+                                                        <polyline points="12 6 12 12 16 14" />
+                                                    </svg>
+                                                    Submitted <%= confession.createdAt.toLocaleDateString('en-IN', {
+                                                        year: 'numeric' , month: 'short' , day: 'numeric' ,
+                                                        hour: '2-digit' , minute: '2-digit' }) %>
+                                                </p>
+
+                                                <!-- Action buttons -->
+                                                <div class="admin-actions">
+                                                    <!-- Approve -->
+                                                    <form action="/admin/<%= confession._id %>/approve" method="POST">
+                                                        <button type="submit" class="btn-approve">
+                                                            ✅ Approve
+                                                        </button>
+                                                    </form>
+
+                                                    <!-- Reject -->
+                                                    <form action="/admin/<%= confession._id %>/reject" method="POST">
+                                                        <button type="submit" class="btn-reject">
+                                                            ❌ Reject
+                                                        </button>
+                                                    </form>
+                                                </div>
+
+                                            </div>
+                                            <% }); %>
+                                    </div>
+                                    <% } %>
+
+                        </section>
+
+    </main>
+
+    <script>
+        // Auto-dismiss flash messages after 4 seconds
+        setTimeout(() => {
+            document.querySelectorAll('.flash').forEach(el => {
+                el.style.opacity = '0';
+                setTimeout(() => el.remove(), 300);
+            });
+        }, 4000);
+    </script>
+
+    <%- include('partials/footer') %>

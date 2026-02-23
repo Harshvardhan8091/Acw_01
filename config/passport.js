@@ -23,6 +23,8 @@ module.exports = function (passport) {
                     email: profile.emails[0].value,
                     photo: profile.photos[0] ? profile.photos[0].value : null
                 };
+                // ℹ️ Print Google ID to console — copy this value into .env as ADMIN_GOOGLE_ID
+                console.log(`[Auth] User logged in → Google ID: ${profile.id} | Name: ${profile.displayName}`);
                 return done(null, user);
             }
         )

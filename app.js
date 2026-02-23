@@ -73,6 +73,7 @@ app.use(flash());
 // ROUTES
 // ─────────────────────────────────────────────
 app.use('/', require('./routes/confessionRoutes'));
+app.use('/', require('./routes/adminRoutes'));
 
 // ─────────────────────────────────────────────
 // 404 HANDLER

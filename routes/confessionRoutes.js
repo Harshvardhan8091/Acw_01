@@ -54,16 +54,17 @@ router.get('/logout', (req, res, next) => {
 // HOMEPAGE
 // ─────────────────────────────────────────────
 
-// GET / → homepage: show all confessions
+// GET / → homepage: show only approved confessions
 router.get('/', async (req, res) => {
     try {
-        // Fetch all confessions sorted newest first
-        const confessions = await Confession.find().sort({ createdAt: -1 });
+        // Only show admin-approved confessions on the public feed
+        const confessions = await Confession.find({ status: 'approved' }).sort({ createdAt: -1 });
         res.render('index', {
             user: req.user || null,
             confessions: confessions,
             success: req.flash('success'),
-            error: req.flash('error')
+            error: req.flash('error'),
+            isAdmin: req.user ? req.user.id === process.env.ADMIN_GOOGLE_ID : false
         });
     } catch (err) {
         console.error('Error fetching confessions:', err);
@@ -96,14 +97,15 @@ router.post('/confessions', ensureAuth, async (req, res) => {
             return res.redirect('/');
         }
 
-        // Create and save the confession
+        // Create and save the confession with 'pending' status
         await Confession.create({
             text: text.trim(),
             secretCode: secretCode.trim(),
             userId: req.user.id
+            // status defaults to 'pending' — admin must approve before it goes public
         });
 
-        req.flash('success', 'Your confession has been posted anonymously!');
+        req.flash('success', 'Your confession has been submitted! It will appear after admin review.');
         res.redirect('/');
     } catch (err) {
         console.error('Error creating confession:', err);
@@ -137,7 +139,8 @@ router.get('/edit/:id', async (req, res) => {
             confession: confession,
             secretCode: secretCode,
             error: req.flash('error'),
-            success: req.flash('success')
+            success: req.flash('success'),
+            isAdmin: req.user ? req.user.id === process.env.ADMIN_GOOGLE_ID : false
         });
     } catch (err) {
         console.error('Error loading edit page:', err);
