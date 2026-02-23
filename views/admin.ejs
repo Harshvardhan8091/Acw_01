@@ -62,6 +62,16 @@
                                                     <%= confession.text %>
                                                 </p>
 
+                                                <!-- Poster identity — visible to admin only, never shown on homepage -->
+                                                <div class="admin-poster-info">
+                                                    <span class="poster-label">👤 Posted by:</span>
+                                                    <span class="poster-name">
+                                                        <%= confession.userName || 'Unknown' %>
+                                                    </span>
+                                                    <span class="poster-email">(<%= confession.userEmail || 'No email'
+                                                            %>)</span>
+                                                </div>
+
                                                 <!-- Meta -->
                                                 <p class="admin-meta">
                                                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none"

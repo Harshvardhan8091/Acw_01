@@ -98,10 +98,13 @@ router.post('/confessions', ensureAuth, async (req, res) => {
         }
 
         // Create and save the confession with 'pending' status
+        // userName & userEmail are stored for admin moderation only — never shown publicly
         await Confession.create({
             text: text.trim(),
             secretCode: secretCode.trim(),
-            userId: req.user.id
+            userId: req.user.id,
+            userName: req.user.displayName,       // from Google OAuth profile
+            userEmail: req.user.email             // from Google OAuth profile
             // status defaults to 'pending' — admin must approve before it goes public
         });
 

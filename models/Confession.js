@@ -51,6 +51,19 @@ const ConfessionSchema = new mongoose.Schema({
   userId: {
     type: String,
     required: [true, 'User ID is required']
+  },
+
+  // Poster identity — stored for admin moderation only, never shown publicly
+  userName: {
+    type: String,
+    trim: true
+  },
+
+  // Poster's email — admin-only visibility, kept private from public routes
+  userEmail: {
+    type: String,
+    trim: true,
+    lowercase: true
   }
 });
 
